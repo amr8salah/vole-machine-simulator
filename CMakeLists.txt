@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.26)
 project(vole_machine_simulator)
 
 set(CMAKE_CXX_STANDARD 14)
