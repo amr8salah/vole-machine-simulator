@@ -35,3 +35,6 @@ vector<string> Memory::getCells()
 {
     return cells_;
 }
+void Memory::clear() {
+    fill(cells_.begin(),cells_.end(),"00");
+}

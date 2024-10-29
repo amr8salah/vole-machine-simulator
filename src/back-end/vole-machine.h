@@ -13,19 +13,18 @@ protected:
     int size_;
 
 public:
-    Memory(int size);
-    Memory() : Memory(256) {};
+    Memory(int size = 256);
     vector<string> getCells();
     int getSize();
     string getCell(int address);
     void setCell(int address, string value);
+    void clear();
 };
 
 class Register : public Memory
 {
 public:
-    Register(int size) : Memory(size) {};
-    Register() : Memory(16) {};
+    Register(int size = 16) : Memory(size) {};
 };
 
 class ALU
