@@ -1,7 +1,12 @@
 #ifndef VOLE_MACHINE_SIMULATOR_SRC_BACK_END_VOLE_MACHINE_H
 #define VOLE_MACHINE_SIMULATOR_SRC_BACK_END_VOLE_MACHINE_H
 
-#include <bits/stdc++.h>
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <vector>
+#include <regex>
+#include <stdfloat>
 
 using namespace std;
 
@@ -21,48 +26,53 @@ public:
     void clear();
 };
 
-class Register : public Memory
+class Registers : public Memory
 {
 public:
-    Register(int size = 16) : Memory(size) {};
+    Registers(int size = 16) : Memory(size) {};
 };
 
 class ALU
 {
-public:
-    int hexToDec(string hex_number);
-    string decToHex(int dec_number);
+protected:
+    double hexToDec(string hex_num);
+    double binToDec(string bin_num);
+    string decToHex(double dec_num);
+    string decToBin(double dec_num);
+    string hexToBin(string hex_num);
+    string binToHex(string bin_num);
+
     bool isValid(string input);
-    void add(int idx_1, int idx_2, int idx_3, Register &rgstr);
+    //Operation code: 5
+    void add(int register_address_1, int register_address_2, Registers &rgstr);
 };
 
 class CU
 {
-public:
-    void load(int register_label, int memory_address, Register &rgstr, Memory &memory);
-    void load(int register_label, int value, Register &rgstr);
-    void store(int register_label, int memory_address, Register &rgstr, Memory &memory);
-    void move(int register_label_1, int register_label_2, Register &rgstr);
-    void jump(int register_label, int memory_address, Register &rgstr, int &program_counter);
+protected:
+    //Operation code: 1
+    void load(int register_address, int memory_address, Registers &rgstr, Memory &memory);
+    //Operation code: 2
+    void load(int register_address, int value, Registers &rgstr);
+    //Operation code: 3
+    void store(int register_address, int memory_address, Registers &rgstr, Memory &memory);
+    //Operation code: 4
+    void move(int register_address_1, int register_address_2, Registers &rgstr);
+    void jump(int register_address, int memory_address, Registers &rgstr, int &program_counter);
     void halt();
+
+    void fetch(Memory &memory, int& program_counter);
+    //vector<int> decode();
+    //void execute(Registers &rgstr, Memory &memory, vector<int> instructions);
+    //void runNextStep(Memory &memory);
 };
 
-class CPU
+class CPU : public ALU, public CU
 {
 private:
-    int program_counter_;
+    int program_counter_=0;
     string instruction_register_;
-    Register rgstr_;
-    ALU alu_;
-    CU cu_;
-
-    void fetch(Memory &memory);
-    vector<int> decode();
-    // change name of decoded_thing
-    void execute(Register &rgstr, Memory &memory, vector<int> decoded_thing);
-
-public:
-    void runNextStep(Memory &memory);
+    Registers registers_; 
 };
 
 class Machine
@@ -72,8 +82,8 @@ private:
     Memory memory_;
 
 public:
-    void loadProgramFile();
-    void outputState();
+    //void loadProgramFile();
+    //void outputState();
 };
 
 #endif // VOLE_MACHINE_SIMULATOR_SRC_BACK_END_VOLE_MACHINE_H
