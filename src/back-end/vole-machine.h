@@ -6,14 +6,12 @@
 #include <fstream>
 #include <vector>
 #include <regex>
-#include <stdfloat>
 
 using namespace std;
 
-// Note to all: define constructors here before writing them in .cpp file
 class Memory
 {
-protected:
+private:
     vector<string> cells_;
     int size_;
 
@@ -22,7 +20,7 @@ public:
     vector<string> getCells();
     int getSize();
     string getCell(int address);
-    void setCell(int address, string value);
+    void setCell(int address, string hex_value);
     void clear();
 };
 
@@ -42,7 +40,9 @@ protected:
     string hexToBin(string hex_num);
     string binToHex(string bin_num);
 
-    bool isValid(string input);
+    string formatInstruction(string input);
+    void decode(string instruction, string& instruction_register);
+
     //Operation code: 5
     void add(int register_address_1, int register_address_2, Registers &rgstr);
 };
@@ -61,18 +61,19 @@ protected:
     void jump(int register_address, int memory_address, Registers &rgstr, int &program_counter);
     void halt();
 
-    void fetch(Memory &memory, int& program_counter);
-    //vector<int> decode();
-    //void execute(Registers &rgstr, Memory &memory, vector<int> instructions);
     //void runNextStep(Memory &memory);
 };
 
-class CPU : public ALU, public CU
+class CPU : ALU, CU
 {
 private:
     int program_counter_=0;
-    string instruction_register_;
-    Registers registers_; 
+    string instruction_register_="0000";
+    Registers registers_;
+public:
+    void fetch(Memory &memory);
+    void execute(Memory &memory);
+    void reset();
 };
 
 class Machine
