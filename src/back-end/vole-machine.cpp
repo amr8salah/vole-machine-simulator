@@ -213,7 +213,7 @@ void CPU::fetch(Memory &memory)
 
 void CPU::reset()
 {
-    program_counter_ = 0;
+    program_counter_ = 2;
     instruction_register_ = "0000";
     registers_.clear();
 };

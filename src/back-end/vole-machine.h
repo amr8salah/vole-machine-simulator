@@ -67,7 +67,7 @@ protected:
 class CPU : ALU, CU
 {
 private:
-    int program_counter_=10;
+    int program_counter_=2;
     string instruction_register_="0000";
     Registers registers_;
 public:
