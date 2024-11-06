@@ -33,15 +33,22 @@ public:
 class ALU
 {
 protected:
-    double hexToDec(string hex_num);
-    double binToDec(string bin_num);
-    string decToHex(double dec_num);
-    string decToBin(double dec_num);
-    string hexToBin(string hex_num);
-    string binToHex(string bin_num);
+    int baseToDec(string& base_num, int base);
 
-    string formatInstruction(string input);
-    void decode(string instruction, string& instruction_register);
+    int hexToDec(string& hex_num);
+    int hexToDec(char hex_num);
+    
+    int binToDec(string& bin_num);
+    int binToDec(char bin_num);
+
+
+    string decToHex(int dec_num);
+    string decToBin(int dec_num);
+    string hexToBin(string& hex_num);
+    string binToHex(string& bin_num);
+
+    string formatInstruction(string& input);
+    void decode(string& instruction, string& instruction_register);
 
     //Operation code: 5
     void add(int register_address_1, int register_address_2);
@@ -55,7 +62,7 @@ protected:
     //Operation code: 2
     void load(int register_address, int value);
     //Operation code: 3
-    void store(int register_address, int memory_address, Memory &memory);
+    void store(int register_address, int memory_address, Registers& registers, Memory &memory);
     //Operation code: 4
     void move(int register_address_1, int register_address_2);
     void jump(int register_address, int memory_address);
