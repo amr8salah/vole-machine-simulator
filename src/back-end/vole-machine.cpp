@@ -46,25 +46,52 @@ void Memory::clear() {
 string &Memory::operator[](int address) {
     return cells_[address];
 }
-void Memory::print() {
 
+void Memory::print() {
+    cout << "      ";
+    for (int i = 0; i < 16; i++) {
+        cout << "0";
+        if (i < 10)
+            cout << i;
+        else {
+            cout << char(i + 55);
+        }
+        cout << " ";
+    }
+    cout << endl;
+    cout << "    " << string(53, '-') << endl;
+    for (int i = 0; i < 16; i++) {
+        cout << "0x";
+        if (i < 10)
+            cout << i;
+        else {
+            cout << char(i + 55);
+        }
+        cout << "0";
+        cout << "| ";
+        for (int j = i*16; j < (i*16+16); j++) {
+            cout << cells_[j] << " ";
+        }
+        cout << endl;
+    }
+    cout << "    " << string(53, '-') << endl;
 }
 
 void Registers::print() {
-    cout<<string(41, '-')<<endl; //10*(size_/columns)+1
-    for(int register_address=0; register_address<16; register_address++) {
-        string str_address="00";
-        if(register_address <10)
-            str_address[1]+=register_address;
+    cout << string(41, '-') << endl; //10*(size_/columns)+1
+    for (int register_address = 0; register_address < 16; register_address++) {
+        string str_address = "00";
+        if (register_address < 10)
+            str_address[1] += register_address;
         else {
-            str_address[0]='1';
-            str_address[2]+=register_address/10;
+            str_address[0] = '1';
+            str_address[2] += register_address / 10;
         }
-        cout<<"| R"<<str_address<<": "<<cells_[register_address]<<" ";
+        cout << "| R" << str_address << ": " << cells_[register_address] << " ";
 
-        if((register_address+1)%4==0) cout<<"|"<<endl;
+        if ((register_address + 1) % 4 == 0) cout << "|" << endl;
     }
-    cout<<string(41, '-')<<endl; //10*(size_/columns)+1
+    cout << string(41, '-') << endl; //10*(size_/columns)+1
 }
 
 void ALU::formatInstruction(string &instruction) {
@@ -83,6 +110,26 @@ void ALU::formatInstruction(string &instruction) {
     } else {
         instruction = "";
     }
+}
+
+void ALU::addTwoComplement(int register_address_1, int register_address_2, int register_address_3,
+    Registers &registers) {
+
+}
+
+void ALU::addFloat(int register_address_1, int register_address_2, int register_address_3, Registers &registers) {
+}
+
+void ALU::OR(int register_address_1, int register_address_2, int register_address_3, Registers &registers) {
+}
+
+void ALU::AND(int register_address_1, int register_address_2, int register_address_3, Registers &registers) {
+}
+
+void ALU::XOR(int register_address_1, int register_address_2, int register_address_3, Registers &registers) {
+}
+
+void ALU::rotate(int register_address, int times, Registers &registers) {
 }
 
 int ALU::baseToDec(string &base_num, int base) {
@@ -189,13 +236,23 @@ void CU::store(int register_address, int memory_address, Registers &registers, M
         cout << memory[memory_address] << endl;
     }
 }
+
+void CU::move(int register_address_1, int register_address_2, Registers &registers) {
+}
+
+void CU::jump(int register_address, int memory_address, int &program_counter) {
+}
+
 void CU::load(int register_address, int memory_address, Registers &registers, Memory &memory) {
     registers[register_address] = memory[memory_address];
 }
+
 void CU::load(int register_address, string value, Registers &registers) {
     registers[register_address] = value;
 }
+
 void CU::halt() {
+
 }
 
 
@@ -206,74 +263,87 @@ void CPU::execute(Memory &memory) {
         string hex_memory_address = instruction_register_.substr(2);
         int memory_address = hexToDec(hex_memory_address);
 
-        load(register_address, memory_address,registers_, memory);
-    }
-    else if (instruction_register_[0] == '2') {
+        load(register_address, memory_address, registers_, memory);
+    } else if (instruction_register_[0] == '2') {
         int register_address = hexToDec(instruction_register_[1]);
         string value = instruction_register_.substr(2);
 
-        load(register_address, value,registers_);
-    }
-    else if (instruction_register_[0] == '3') {
+        load(register_address, value, registers_);
+    } else if (instruction_register_[0] == '3') {
         int register_address = hexToDec(instruction_register_[1]);
         string hex_memory_address = instruction_register_.substr(2);
         int memory_address = hexToDec(hex_memory_address);
 
         store(register_address, memory_address, registers_, memory);
-    }
-    else if (instruction_register_[0] == '4') {
-    }
-    else if (instruction_register_[0] == '5') {
-    }
-    else if (instruction_register_[0] == '6') {
-    }
-    else if (instruction_register_[0] == '7') {
-    }
-    else if (instruction_register_[0] == '8') {
-    }
-    else if (instruction_register_[0] == '9') {
-    }
-    else if (instruction_register_[0] == 'A') {
-    }
-    else if (instruction_register_[0] == 'B') {
-    }
-    else if (instruction_register_[0] == 'C') {
+    } else if (instruction_register_[0] == '4') {
+        int register_address_1 = hexToDec(instruction_register_[2]);
+        int register_address_2 = hexToDec(instruction_register_[3]);
+        move(register_address_1, register_address_2, registers_);
+    } else if (instruction_register_[0] >= '6' && instruction_register_[0] <= '9') {
+        int register_address_1 = hexToDec(instruction_register_[1]);
+        int register_address_2 = hexToDec(instruction_register_[2]);
+        int register_address_3 = hexToDec(instruction_register_[3]);
+        if (instruction_register_[0] == '5') {
+            addTwoComplement(register_address_1, register_address_2, register_address_3, registers_);
+        } else if (instruction_register_[0] == '6') {
+            addFloat(register_address_1, register_address_2, register_address_3, registers_);
+        } else if (instruction_register_[0] == '7') {
+            OR(register_address_1, register_address_2, register_address_3, registers_);
+        } else if (instruction_register_[0] == '8') {
+            AND(register_address_1, register_address_2, register_address_3, registers_);
+        } else if (instruction_register_[0] == '9') {
+            XOR(register_address_1, register_address_2, register_address_3, registers_);
+        }
+    } else if (instruction_register_[0] == 'A') {
+        int register_address = hexToDec(instruction_register_[1]);
+        int x_times = hexToDec(instruction_register_[3]);
+        rotate(register_address, x_times, registers_);
+    } else if (instruction_register_[0] == 'B') {
+        int register_address = hexToDec(instruction_register_[1]);
+        string hex_memory_address = instruction_register_.substr(2);
+        int memory_address = hexToDec(hex_memory_address);
+
+        jump(register_address, memory_address, program_counter_);
+    } else if (instruction_register_[0] == 'C') {
         halt();
     }
 }
 
 void CPU::fetch(Memory &memory) {
-    while (program_counter_++ && program_counter_ < 255) {
-        string instruction = memory.getCell(program_counter_) +
-                             memory.getCell(program_counter_ + 1); // Merges data in m[pc] and m[pc+1]
-        decode(instruction,memory);
-
-    }
-
-    // User halted or no more instructions in the memory
-    halt();
-}
-void CPU::decode(string instruction,Memory& memory) {
+    string instruction = memory[program_counter_] + memory[program_counter_ + 1];
+    // Merges data in memory[pc] and memory[pc+1]
     instruction_register_ = instruction;
+}
+
+void CPU::decode(Memory &memory) {
+    string instruction = instruction_register_;
     formatInstruction(
-            instruction); // Checks instruction validity
+        instruction); // Checks instruction validity
 
     // If valid instruction
     if (!instruction.empty()) {
         execute(memory);
-        program_counter_+=2;
     }
     // If not valid instruction
     else {
-        runNextStep(memory);
+        cout << "Invalid instruction" << endl;
     }
 }
-void CPU::runNextStep(Memory &memory) {
 
+void CPU::oneStep(Memory &memory) {
+    if (program_counter_ < halt_position_) {
+        fetch(memory);
+        program_counter_ += 2;
+        decode(memory);
+    } else {
+        is_halt_=true;
+    }
 }
 
 void CPU::reset() {
     program_counter_ = 2;
+    halt_position_ = 2;
+    is_halt_ = false;
     instruction_register_ = "0000";
     registers_.clear();
 }
@@ -281,20 +351,28 @@ void CPU::reset() {
 void CPU::setProgramCounter(int value) {
     program_counter_ = value;
 }
-void CPU::outputState(Memory& memory) {
-    cout<<"Program Counter: "<<program_counter_<<endl;
-    cout<<"Instruction Register: "<<instruction_register_<<endl;
+
+void CPU::setHaltPosition(int value) {
+    halt_position_ = value;
+}
+
+void CPU::outputState(Memory &memory) {
+    cout << "Program Counter: 0x" << decToHex(program_counter_) << endl;
+    cout << "Instruction Register: 0x" << instruction_register_ << endl;
+    cout << "Registers:" << endl;
     registers_.print();
-    cout<<endl;
+    cout << "Memory: " << endl;
     memory.print();
 }
 
-void Machine::storeInstructions(vector<string> &instructions, int program_counter) {
+void Machine::storeInput(vector<string> &instructions, int program_counter) {
     cpu_.setProgramCounter(program_counter);
-    for (int i = 0, j = program_counter; i < instructions.size() && j < 255; i++, j += 2) {
+    int exit_position = program_counter;
+    for (int i = 0, j = program_counter; i < instructions.size() && j < 255; i++, j += 2, exit_position += 2) {
         memory_[j] = instructions[i].substr(0, 2);
         memory_[j + 1] = instructions[i].substr(2);
     }
+    cpu_.setHaltPosition(exit_position);
 }
 
 
@@ -302,6 +380,26 @@ void Machine::reset() {
     cpu_.reset();
     memory_.clear();
 }
+void Machine::runOneStep(bool& is_halt) {
+    cpu_.oneStep(memory_);
+    is_halt = cpu_.is_halt_;
+}
+
+void Machine::runUntilHalt() {
+    while(!cpu_.is_halt_) {
+        cpu_.oneStep(memory_);
+    }
+}
+
+void Machine::resetCPU() {
+    cpu_.reset();
+}
+
+void Machine::clearMemory() {
+    memory_.clear();
+}
+
+
 void Machine::outputState() {
     cpu_.outputState(memory_);
 }
@@ -344,10 +442,6 @@ void MainUI::menu3() {
     int n_instructions = 0;
     string instruction;
     while (n_instructions++) {
-        if (n_instructions > 128) {
-            cerr << "Memory full, can't take more instructions" << endl;
-            break;
-        }
         while (true) {
             cin >> instruction;
             for (auto &c: instruction)
@@ -355,21 +449,19 @@ void MainUI::menu3() {
             if (instruction == "run" || instruction == "RUN") {
                 break;
             }
-            formatInstruction(instruction);
-            if (instruction == "") {
+            formatInput(instruction);
+            if (instruction.empty()) {
                 cout << "Please input instruction between 0x0000 and 0xFFFF: ";
                 continue;
-            }
-            else {
+            } else {
                 cout << "Note: Input \"run\" to stop entering" << endl;
                 break;
             }
         }
         if (instruction == "run" || instruction == "RUN") {
             break;
-        }
-        else {
-            instructions_.push_back(instruction);
+        } else {
+            user_instructions_.push_back(instruction);
         }
     }
 }
@@ -397,28 +489,54 @@ void MainUI::menu4(Machine &machine) {
             }
         }
     }
-    machine.storeInstructions(instructions_, program_counter);
+    machine.storeInput(user_instructions_, program_counter);
     menu5(machine);
 }
+
 void MainUI::menu5(Machine &machine) {
-    cout<<"1. Run one instruction"<<endl;
-    cout<<"2. Run all instructions/until halt"<<endl;
-    cout<<"3. Print memory and registers"<<endl;
-    cout<<"Enter your choice: ";
+    cout << "1. Run one instruction" << endl;
+    cout << "2. Run all instructions/until halt" << endl;
+    cout << "3. Print memory and registers" << endl;
+    cout << "Enter your choice: ";
     inputChoice('3');
+    bool is_halt = false;
     switch (choice_) {
         case 1:
-            //run one instruction
+            machine.runOneStep(is_halt);
             break;
         case 2:
-            //until halt
+            machine.runUntilHalt();
+            is_halt = true;
             break;
         case 3:
             machine.outputState();
             menu5(machine);
             break;
     }
+    if (is_halt) {
+        machine.outputState();
+        menu6(machine);
+    }
 
+}
+
+void MainUI::menu6(Machine &machine) {
+    cout << "1. Reset CPU" << endl;
+    cout << "2. Clear memory" << endl;
+    cout << "3. New machine" << endl;
+    inputChoice('3');
+    switch (choice_) {
+        case 1:
+            machine.resetCPU();
+            break;
+        case 2:
+            machine.clearMemory();
+            break;
+        case 3:
+            machine.reset();
+            break;
+    }
+    menu1(machine);
 }
 
 void MainUI::inputChoice(const char till) {
@@ -471,8 +589,7 @@ void MainUI::loadFile() {
             cerr << "Couldn't open " << file_name
                     << ", make sure it is a valid name with extension(example.txt) and that is located inside \"input files\""
                     << endl;
-        }
-        else {
+        } else {
             break;
         }
     }
@@ -480,11 +597,11 @@ void MainUI::loadFile() {
     int n_instructions = 0;
     string instruction;
     while (getline(instruction_file, instruction)) {
-        formatInstruction(instruction);
+        formatInput(instruction);
         //If valid instruction
-        if (instruction != "") {
+        if (!instruction.empty()) {
             n_instructions++;
-            instructions_.push_back(instruction);
+            user_instructions_.push_back(instruction);
         }
         // Maximum instruction that memory can hold exceeded
         if (n_instructions == 128) {
@@ -499,7 +616,7 @@ void MainUI::exitProgram() {
     exit(0);
 }
 
-void MainUI::formatInstruction(string &instruction) {
+void MainUI::formatInput(string &instruction) {
     // If memory can store returns formatted one else returns empty string
     if (regex_match(instruction, regex("(0x)?[0-9a-fA-F]{4}"))) {
         if (instruction.size() == 6) {
@@ -507,8 +624,7 @@ void MainUI::formatInstruction(string &instruction) {
         }
         for (auto &c: instruction)
             c = toupper(c);
-    }
-    else {
+    } else {
         instruction = "";
     }
 }

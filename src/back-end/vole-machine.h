@@ -43,7 +43,6 @@ public:
 
 class ALU {
 protected:
-    bool is_halt_ = false;
 
     int baseToDec(string &base_num, int base);
 
@@ -66,7 +65,17 @@ protected:
     void formatInstruction(string &input);
 
     // Operation code: 5
-    void add(int register_address_1, int register_address_2);
+    void addTwoComplement(int register_address_1, int register_address_2, int register_address_3, Registers &registers);
+    // Operation code: 6
+    void addFloat(int register_address_1, int register_address_2, int register_address_3, Registers &registers);
+    // Operation code: 7
+    void OR(int register_address_1, int register_address_2, int register_address_3, Registers &registers);
+    // Operation code: 8
+    void AND(int register_address_1, int register_address_2, int register_address_3, Registers &registers);
+    // Operation code: 9
+    void XOR(int register_address_1, int register_address_2, int register_address_3, Registers &registers);
+    // Operation code: A
+    void rotate(int register_address, int times, Registers &registers);
 };
 
 class CU {
@@ -81,27 +90,34 @@ protected:
     void store(int register_address, int memory_address, Registers &registers, Memory &memory);
 
     // Operation code: 4
-    void move(int register_address_1, int register_address_2);
+    void move(int register_address_1, int register_address_2, Registers &registers);
 
-    void jump(int register_address, int memory_address);
+    // Operation code: B
+    void jump(int register_address, int memory_address, int& program_counter);
 
+    // Operation code: C
     void halt();
 };
 
 class CPU : ALU, CU {
 private:
     int program_counter_ = 2;
+    int halt_position_ = 2;
+
     string instruction_register_ = "0000";
     Registers registers_;
 
     void fetch(Memory &memory);
-    void decode(string instruction,Memory& memory);
+    void decode(Memory& memory);
     void execute(Memory &memory);
 
 public:
-    void runNextStep(Memory &memory);
+    bool is_halt_ = false;
+
+    void oneStep(Memory &memory);
 
     void setProgramCounter(int value);
+    void setHaltPosition(int value);
 
     void reset();
     void outputState(Memory& memory);
@@ -113,7 +129,15 @@ private:
     Memory memory_;
 
 public:
-    void storeInstructions(vector<string> &instructions, int program_counter);
+    void storeInput(vector<string> &instructions, int program_counter);
+
+    void runOneStep(bool &is_halt); //return true is halt
+
+    void runUntilHalt();
+
+    void resetCPU();
+
+    void clearMemory();
 
     void reset();
 
@@ -122,15 +146,15 @@ public:
 class MainUI {
 private:
     int choice_;
-    vector<string> instructions_;
+    vector<string> user_instructions_;
 
-    void inputChoice(const char till);
+    void inputChoice(char till);
 
     bool inputDecision();
 
     void loadFile();
 
-    void formatInstruction(string &instruction);
+    void formatInput(string &instruction);
 
     void menu1(Machine &machine);
 
@@ -141,6 +165,8 @@ private:
     void menu4(Machine &machine);
 
     void menu5(Machine &machine);
+
+    void menu6(Machine &machine);
 
 public:
     void startProgram(Machine &machine);
