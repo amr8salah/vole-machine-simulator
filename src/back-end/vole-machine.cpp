@@ -532,7 +532,7 @@ void MainUI::menu3() {
     cout << "Enter instructions(hex format): ";
 
     // Input instructions manually
-    int n_instructions = 0;
+    int n_instructions = 1;
     string instruction;
     while (n_instructions++) {
         while (true) {
