@@ -6,6 +6,7 @@
 #include <fstream>
 #include <vector>
 #include <regex>
+#include <cmath>
 #include <stdexcept>
 #include <cstdlib>
 
@@ -43,24 +44,21 @@ public:
 
 class ALU {
 protected:
-
-    int baseToDec(string &base_num, int base);
-
-    int hexToDec(string &hex_num);
-
-    int hexToDec(char hex_num);
-
-    int binToDec(string &bin_num);
-
-    int binToDec(char bin_num);
+    int hexToDec(char hex_digit);
 
     string decToHex(int dec_num);
 
-    string decToBin(int dec_num);
+    string decToBin(int dec_num, int bits=0);
 
-    string hexToBin(string &hex_num);
+    string hexToBin(string &hex_num, int bits=0);
 
     string binToHex(string &bin_num);
+
+    string floatDecimalToBin(double float_decimal);
+
+    void convertToOneComplement(string& bin_num, int bits=0);
+
+    int convertToSignedInteger(int dec_unsigned);
 
     void formatInstruction(string &input);
 
@@ -131,7 +129,7 @@ private:
 public:
     void storeInput(vector<string> &instructions, int program_counter);
 
-    void runOneStep(bool &is_halt); //return true is halt
+    void runOneStep(bool &is_halt);
 
     void runUntilHalt();
 
@@ -145,7 +143,7 @@ public:
 };
 class MainUI {
 private:
-    int choice_;
+    int choice_=0;
     vector<string> user_instructions_;
 
     void inputChoice(char till);
